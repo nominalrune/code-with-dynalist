@@ -1,14 +1,14 @@
-import { TodoistState } from "./types";
+import { Dynalist } from "./types";
 
-export const TODOIST_INITIAL_STATE: TodoistState = {
+export const DYNALIST_INITIAL_STATE: Dynalist = {
     projects: [],
     tasks: [],
     sections: [],
 };
 
 export enum CONTEXT_KEYS {
-    TODOIST_DATA = "todoistData",
-    TODOIST_SELECTED_TASK = "todoistSelectedTask",
+    DYNALIST_DATA = "dynalistData",
+    DYNALIST_SELECTED_TASK = "dynalistSelectedTask",
 }
 
 export enum SORT_BY {

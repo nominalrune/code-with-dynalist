@@ -2,8 +2,8 @@ import type { Task } from '@doist/todoist-api-typescript';
 
 import * as vscode from 'vscode';
 import SettingsHelper from './helpers/settingsHelper';
-import { ProjectsProvider } from './features/projectsProvider';
-import TodoistAPIHelper from './helpers/todoistAPIHelper';
+import { DocumentsProvider } from './features/documentsProvider';
+import DynalistAPIHelper from './helpers/dynalistAPIHelper';
 import { TaskProvider } from './features/taskProvider';
 import { TodayTaskProvider } from './features/todayTaskProvider';
 import { WorkspaceProjectProvider } from './features/workspaceProjectProvider';
@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	SecretsHelper.configureSecretsHelper(context.secrets);
 	const apiToken = await SecretsHelper.getSecret('apiToken');
 
-	const projectsTreeViewProvider = new ProjectsProvider(context.globalState);
+	const projectsTreeViewProvider = new DocumentsProvider(context.globalState);
 	const taskTreeViewProvider = new TaskProvider(context);
 	const todayTaskViewProvider = new TodayTaskProvider(context.globalState);
 	let workspaceProjectTreeViewProvider: WorkspaceProjectProvider;
@@ -155,7 +155,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 			return new Promise(resolve => {
 				const state = context.globalState;
-				const apiHelper = new TodoistAPIHelper(state);
+				const apiHelper = new DynalistAPIHelper(state);
 				progress.report({ message: '', increment: 50 });
 
 				apiHelper.createTask(taskName, workspaceProjectId).then(task => {
@@ -213,7 +213,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		const apiHelper = new TodoistAPIHelper(context.globalState);
+		const apiHelper = new DynalistAPIHelper(context.globalState);
 
 		const success = await apiHelper.closeOpenTask(taskId).catch(() => false);
 
@@ -258,8 +258,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	function syncTodoist() {
 		const state = context.globalState;
-		const apiHelper = new TodoistAPIHelper(state);
-		const projectsTreeViewProvider = new ProjectsProvider(state);
+		const apiHelper = new DynalistAPIHelper(state);
+		const projectsTreeViewProvider = new DocumentsProvider(state);
 		const todayTaskTreeViewProvider = new TodayTaskProvider(state);
 
 		const progressOptions: vscode.ProgressOptions = {

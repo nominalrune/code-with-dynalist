@@ -8,7 +8,7 @@ export default class NotificationHelper {
 
     public static setupTaskNotifications(context: vscode.Memento): NodeJS.Timeout[] {
         let taskNotification: NodeJS.Timeout[] = [];
-        const tasks = SettingsHelper.getTodoistData(context).tasks;
+        const tasks = SettingsHelper.getDynalistData(context).tasks;
 
         for (const task of tasks) {
             if (!task.due?.datetime) {
@@ -33,13 +33,13 @@ export default class NotificationHelper {
 
                 switch (res) {
                     case RESPONSE_OPTIONS[0]:
-                        vscode.commands.executeCommand('todoist.openTask', task.id);
+                        vscode.commands.executeCommand('dynalist.openTask', task.id);
                         break;
                     case RESPONSE_OPTIONS[1]:
-                        vscode.commands.executeCommand('todoist.openTaskInBrowser', task.url);
+                        vscode.commands.executeCommand('dynalist.openTaskInBrowser', task.url);
                         break;
                     case RESPONSE_OPTIONS[2]:
-                        vscode.commands.executeCommand('todoist.closeTask', task);
+                        vscode.commands.executeCommand('dynalist.closeTask', task);
                         break;
                     default:
                         break;

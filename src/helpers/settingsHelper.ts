@@ -1,6 +1,6 @@
-import type { TodoistState } from '../types';
+import type { Dynalist } from '../types';
 import { workspace, Memento } from 'vscode';
-import { TODOIST_INITIAL_STATE, SORT_BY, CONTEXT_KEYS } from '../constants';
+import { DYNALIST_INITIAL_STATE, SORT_BY, CONTEXT_KEYS } from '../constants';
 
 export default class SettingsHelper {
     public static getSyncInterval() {
@@ -44,15 +44,15 @@ export default class SettingsHelper {
         return workspace.getConfiguration().get<string>("identifyTodos.regex") ?? "*";
     }
 
-    public static getTodoistData(context: Memento) {
+    public static getDynalistData(context: Memento) {
         const data = context.get<string>(CONTEXT_KEYS.TODOIST_DATA);
         if (data) {
-            return JSON.parse(data) as TodoistState;
+            return JSON.parse(data) as Dynalist;
         }
-        return TODOIST_INITIAL_STATE;
+        return DYNALIST_INITIAL_STATE;
     }
 
-    public static setTodoistData(context: Memento, data: TodoistState) {
+    public static setDynalistData(context: Memento, data: Dynalist) {
         context.update(CONTEXT_KEYS.TODOIST_DATA, JSON.stringify(data));
         return;
     }

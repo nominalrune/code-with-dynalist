@@ -1,44 +1,43 @@
-import type { Section, Task } from '@doist/todoist-api-typescript';
 import type { ProjectQuickPick } from '../types';
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import TodoistAPIHelper from '../helpers/todoistAPIHelper';
-import { TodoistTreeItem } from '../models/todoistTreeView';
+import DynalistAPIHelper from '../helpers/dynalistAPIHelper';
+import { DynalistTreeItem } from '../models/DynalistTreeView';
 import SettingsHelper from '../helpers/settingsHelper';
 import { SORT_BY } from '../constants';
 
-export class ProjectsProvider implements vscode.TreeDataProvider<TodoistTreeItem> {
+export class DocumentsProvider implements vscode.TreeDataProvider<DynalistTreeItem> {
 
-    private apiHelper: TodoistAPIHelper;
+    private apiHelper: DynalistAPIHelper;
     private state: vscode.Memento;
 
-    private _onDidChangeTreeData = new vscode.EventEmitter<TodoistTreeItem | undefined>();
-    onDidChangeTreeData?: vscode.Event<TodoistTreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData = new vscode.EventEmitter<DynalistTreeItem | undefined>();
+    onDidChangeTreeData?: vscode.Event<DynalistTreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
-    refresh(data: TodoistTreeItem | undefined): void {
+    refresh(data: DynalistTreeItem | undefined): void {
         this._onDidChangeTreeData.fire(data);
     }
 
     constructor(context: vscode.Memento) {
         this.state = context;
-        this.apiHelper = new TodoistAPIHelper(context);
+        this.apiHelper = new DynalistAPIHelper(context);
     }
 
-    getTreeItem(element: TodoistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        const data = SettingsHelper.getTodoistData(this.state);
+    getTreeItem(element: DynalistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        const data = SettingsHelper.getDynalistData(this.state);
         if (data.tasks.some(task => task.parentId && task.parentId === element.id)) {
             element.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         }
         return element;
     }
 
-    getChildren(element?: TodoistTreeItem): vscode.ProviderResult<TodoistTreeItem[]> {
+    getChildren(element?: DynalistTreeItem): vscode.ProviderResult<DynalistTreeItem[]> {
         const api = this.apiHelper;
-        const data = SettingsHelper.getTodoistData(this.state);
+        const data = SettingsHelper.getDynalistData(this.state);
 
         if (element) {
-            let treeView: TodoistTreeItem[] = [];
+            let treeView: DynalistTreeItem[] = [];
             if (data.projects && data.projects.length > 0) {
                 let projects = formatProjects(data.projects.filter(p => p.parentId && p.parentId === element.id!));
                 treeView.push(...projects);
@@ -77,7 +76,7 @@ export class ProjectsProvider implements vscode.TreeDataProvider<TodoistTreeItem
                 return formatProjects(data.projects.filter(p => !p.parentId));
             }
             else {
-                api.getProjects().then((projects) => {
+                api.getDocuments().then((projects) => {
                     return formatProjects(projects.filter(p => !p.parentId));
                 });
             }
@@ -86,10 +85,10 @@ export class ProjectsProvider implements vscode.TreeDataProvider<TodoistTreeItem
 }
 
 function formatTasks(tasks: Task[]) {
-    let activeTasks: TodoistTreeItem[] = [];
+    let activeTasks: DynalistTreeItem[] = [];
     tasks = sortTasks();
     tasks.forEach(t => {
-        let treeview = new TodoistTreeItem(t.content);
+        let treeview = new DynalistTreeItem(t.content);
         treeview.id = t.id;
         treeview.tooltip = new vscode.MarkdownString(t.content);
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
@@ -123,10 +122,10 @@ function formatTasks(tasks: Task[]) {
 }
 
 function formatSections(sections: Section[]) {
-    let displaySections: TodoistTreeItem[] = [];
+    let displaySections: DynalistTreeItem[] = [];
     sections = sections.sort((a, b) => a.order > b.order ? 1 : -1);
     sections.forEach(s => {
-        let treeview = new TodoistTreeItem(s.name);
+        let treeview = new DynalistTreeItem(s.name);
         treeview.id = s.id;
         treeview.tooltip = s.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
@@ -139,10 +138,10 @@ function formatSections(sections: Section[]) {
 
 
 function formatProjects(projects: ProjectQuickPick[]) {
-    let displayProjects: TodoistTreeItem[] = [];
+    let displayProjects: DynalistTreeItem[] = [];
     projects = projects.sort((a, b) => a.order > b.order ? 1 : 0);
     projects.forEach(p => {
-        let treeview = new TodoistTreeItem(p.name);
+        let treeview = new DynalistTreeItem(p.name);
         treeview.id = p.id;
         treeview.tooltip = p.name;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;

@@ -2,16 +2,16 @@ import type { Task, DueDate } from '@doist/todoist-api-typescript';
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { TodoistTreeItem } from '../models/todoistTreeView';
+import { DynalistTreeItem } from '../models/DynalistTreeView';
 import SettingsHelper from '../helpers/settingsHelper';
 import { SORT_BY } from '../constants';
 
-export class TodayTaskProvider implements vscode.TreeDataProvider<TodoistTreeItem> {
+export class TodayTaskProvider implements vscode.TreeDataProvider<DynalistTreeItem> {
 
     private state: vscode.Memento;
 
-    private _onDidChangeTreeData: vscode.EventEmitter<TodoistTreeItem | undefined> = new vscode.EventEmitter<TodoistTreeItem | undefined>();
-    onDidChangeTreeData?: vscode.Event<TodoistTreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<DynalistTreeItem | undefined> = new vscode.EventEmitter<DynalistTreeItem | undefined>();
+    onDidChangeTreeData?: vscode.Event<DynalistTreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
 
     refresh(): void {
 		this._onDidChangeTreeData.fire(undefined);
@@ -21,7 +21,7 @@ export class TodayTaskProvider implements vscode.TreeDataProvider<TodoistTreeIte
         this.state = context;
     }
 
-    getTreeItem(element: TodoistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    getTreeItem(element: DynalistTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
 
@@ -46,10 +46,10 @@ function isToday(date: DueDate) {
 }
 
 function formatTasks(tasks: Task[]) {
-    let activeTasks: TodoistTreeItem[] = [];
+    let activeTasks: DynalistTreeItem[] = [];
     tasks = sortTasks();
     tasks.forEach(t => {
-        let treeview = new TodoistTreeItem(t.content);
+        let treeview = new DynalistTreeItem(t.content);
         treeview.id = t.id.toString();
         treeview.tooltip = t.content;
         treeview.collapsibleState = vscode.TreeItemCollapsibleState.None;
